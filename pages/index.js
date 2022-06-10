@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
 import Product from '../components/Product';
+import CreateProduct from "../components/CreateProduct";
+import HeadComponent from '../components/Head';
 
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
-import HeadComponent from '../components/Head';
 import { publicKey } from "@solana/web3.js";
 
 // Constants
@@ -13,6 +14,8 @@ const TWITTER_LINK = `https://twitter.com/${TWITTER_HANDLE}`;
 
 const App = () => {
   const { publicKey } = useWallet();
+  const isOwner = ( publicKey ? publicKey.toString() === process.env.NEXT_PUBLIC_OWNER_PUBLIC_KEY : false );
+  const [creating, setCreating] = useState(false);
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -51,9 +54,16 @@ const App = () => {
         <header className="header-container">
           <p className="header">🍌 Buy My Solana Banana 🍌</p>
           <p className="sub-text">Don't you wanna buy my banana? 😳</p>
+
+          {isOwner && (
+            <button className="create-product-button" onClick={() => setCreating(!creating)}>
+              {creating ? "Close" : "Create Product"}
+            </button>
+          )}
         </header>
 
         <main>
+          {creating && <CreateProduct />}
           {publicKey ? renderItemBuyContainer() : renderNotConnectedContainer()}
         </main>
 
@@ -64,7 +74,7 @@ const App = () => {
             href={TWITTER_LINK}
             target="_blank"
             rel="noreferrer"
-          >{`built on @${TWITTER_HANDLE}`}</a>
+          >{`built on @${TWITTER_HANDLE}! y'all are cool`}</a>
         </div>
       </div>
     </div>
